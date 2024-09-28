@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useGetMyOrders } from "@/api/OrderApi";
 import OrderStatusDetail from "@/components/OrderStatusDetail";
 import OrderStatusHeader from "@/components/OrderStatusHeader";
@@ -8,7 +8,6 @@ const OrderStatusPage = () => {
   const { orders: fetchedOrders, isLoading } = useGetMyOrders();
   const [orders, setOrders] = useState(fetchedOrders || []); // Manage orders locally
   const [deletedOrderIds, setDeletedOrderIds] = useState<string[]>([]); // Track deleted orders
-  const printRefs = useRef<{ [key: string]: HTMLDivElement | null }>({}); // Create refs for each order
 
   // Update orders when fetchedOrders change
   useEffect(() => {
@@ -35,23 +34,6 @@ const OrderStatusPage = () => {
     }
   };
 
-  // Function to print individual order card
-  const printOrder = (orderId: string) => {
-    const orderRef = printRefs.current[orderId];
-    if (orderRef) {
-      const printContents = orderRef.innerHTML;
-      const originalContents = document.body.innerHTML;
-
-      // Replace the body content with the selected order's content for printing
-      document.body.innerHTML = printContents;
-      window.print();
-
-      // After printing, restore the original content
-      document.body.innerHTML = originalContents;
-      window.location.reload(); // Reload to restore event handlers
-    }
-  };
-
   if (isLoading) {
     return "Loading...";
   }
@@ -68,7 +50,6 @@ const OrderStatusPage = () => {
       {displayedOrders.map((order) => (
         <div
           key={order._id}
-          ref={(el) => (printRefs.current[order._id] = el)} // Assign ref to each order card
           className="space-y-10 bg-gray-50 p-10 rounded-lg"
         >
           <OrderStatusHeader order={order} />
@@ -90,14 +71,6 @@ const OrderStatusPage = () => {
               className="text-red-500 border border-red-500 hover:bg-red-500 hover:text-white px-4 py-2 rounded-md"
             >
               Delete Order
-            </button>
-
-            {/* Print button */}
-            <button
-              onClick={() => printOrder(order._id)}
-              className="text-orange-500 border border-orange-500 hover:bg-orange-500 hover:text-white px-4 py-2 rounded-md"
-            >
-              Print Order
             </button>
           </div>
         </div>
