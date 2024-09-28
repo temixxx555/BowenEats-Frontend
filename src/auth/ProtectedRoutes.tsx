@@ -12,7 +12,9 @@ const ProtectedRoutes = () => {
     "auth0|66d9befe6bb843fe8d87ed54",
     "google-oauth2|107555497492928600120",
     "auth0|66db324b119bdb96742b3a40",
-    "auth0|66f57727f18989fbae70761e"
+    "auth0|66f57727f18989fbae70761e",
+    "auth0|66f57727f18989fbae70761e",
+
   ];
 
   if (isLoading) {
