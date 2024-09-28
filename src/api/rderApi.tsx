@@ -5,13 +5,13 @@ import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-
 export const useGetMyOrders = () => {
   const { getAccessTokenSilently } = useAuth0();
 
   const getMyOrdersRequest = async (): Promise<Order[]> => {
     const accessToken = await getAccessTokenSilently();
-    const response = await fetch(`${API_BASE_URL}/api/order/my-orders`, { // Corrected endpoint to fetch user orders
+
+    const response = await fetch(`${API_BASE_URL}/api/order`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -24,19 +24,22 @@ export const useGetMyOrders = () => {
     return response.json();
   };
 
-  const { data: orders, isLoading } = useQuery("fetchMyOrders", getMyOrdersRequest, {
-    refetchInterval: 5000,
-  });
+  const { data: orders, isLoading } = useQuery(
+    "fetchMyOrders",
+    getMyOrdersRequest,
+    {
+      refetchInterval: 5000,
+    }
+  );
 
   return { orders, isLoading };
 };
 
-type CreateOrderRequest = {
+type CheckoutSessionRequest = {
   cartItems: {
     menuItemId: string;
     name: string;
-    quantity: number;
-    price: number;
+    quantity: string;
   }[];
   deliveryDetails: {
     email: string;
@@ -45,33 +48,41 @@ type CreateOrderRequest = {
     city: string;
   };
   restaurantId: string;
-  deliveryPrice?: number; // Optional delivery price
-  accountName: string; // New field for account name
-  accountNumber: string; // New field for account number
 };
 
-export const useCreateOrder = () => {
+export const useCreateCheckoutSession = () => {
   const { getAccessTokenSilently } = useAuth0();
 
-  const createOrderRequest = async (orderData: CreateOrderRequest) => {
+  const createCheckoutSessionRequest = async (
+    checkoutSessionRequest: CheckoutSessionRequest
+  ) => {
     const accessToken = await getAccessTokenSilently();
-    const response = await fetch(`${API_BASE_URL}/api/order`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(orderData), // Includes deliveryPrice if provided
-    });
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/order/checkout/create-checkout-session`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(checkoutSessionRequest),
+      }
+    );
 
     if (!response.ok) {
-      throw new Error("Unable to create order");
+      throw new Error("Unable to create checkout session");
     }
 
     return response.json();
   };
 
-  const { mutateAsync: createOrder, isLoading, error, reset } = useMutation(createOrderRequest);
+  const {
+    mutateAsync: createCheckoutSession,
+    isLoading,
+    error,
+    reset,
+  } = useMutation(createCheckoutSessionRequest);
 
   if (error) {
     toast.error(error.toString());
@@ -79,7 +90,7 @@ export const useCreateOrder = () => {
   }
 
   return {
-    createOrder,
+    createCheckoutSession,
     isLoading,
   };
 };

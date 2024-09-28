@@ -16,9 +16,11 @@ import { useEffect, useState } from "react";
 
 type Props = {
   order: Order;
+  onDeleteOrder: (orderId: string) => void; // New prop for delete function
+  isDeleted: boolean; // Prop to check if the order is deleted
 };
 
-const OrderItemCard = ({ order }: Props) => {
+const OrderItemCard = ({ order, onDeleteOrder, isDeleted }: Props) => {
   const { updateRestaurantStatus, isLoading } = useUpdateMyRestaurantOrder();
   const [status, setStatus] = useState<OrderStatus>(order.status);
 
@@ -36,14 +38,31 @@ const OrderItemCard = ({ order }: Props) => {
 
   const getTime = () => {
     const orderDateTime = new Date(order.createdAt);
-
     const hours = orderDateTime.getHours();
     const minutes = orderDateTime.getMinutes();
-
     const paddedMinutes = minutes < 10 ? `0${minutes}` : minutes;
 
     return `${hours}:${paddedMinutes}`;
   };
+
+  const handleDelete = () => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this order?");
+    if (confirmDelete) {
+      onDeleteOrder(order._id as string); // Call the delete function passed from parent
+    }
+  };
+
+  // Utility function to format currency
+  const formatCurrency = (amount: number) => {
+    return amount
+      .toLocaleString("en-NG") // Format number with commas for Naira
+      .replace(/,/g, ","); // You can adjust this as needed
+  };
+
+  // If the order is deleted, return null (or you can render a message instead)
+  if (isDeleted) {
+    return null;
+  }
 
   return (
     <Card>
@@ -56,7 +75,7 @@ const OrderItemCard = ({ order }: Props) => {
             </span>
           </div>
           <div>
-            Delivery address:
+            Hostel address:
             <span className="ml-2 font-normal">
               {order.deliveryDetails.addressLine1}, {order.deliveryDetails.city}
             </span>
@@ -68,7 +87,7 @@ const OrderItemCard = ({ order }: Props) => {
           <div>
             Total Cost:
             <span className="ml-2 font-normal">
-              £{(order.totalAmount / 100).toFixed(2)}
+              ₦{formatCurrency(order.totalAmount)} {/* Format to Naira with commas */}
             </span>
           </div>
         </CardTitle>
@@ -77,7 +96,7 @@ const OrderItemCard = ({ order }: Props) => {
       <CardContent className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           {order.cartItems.map((cartItem) => (
-            <span>
+            <span key={cartItem.name}>
               <Badge variant="outline" className="mr-2">
                 {cartItem.quantity}
               </Badge>
@@ -97,11 +116,14 @@ const OrderItemCard = ({ order }: Props) => {
             </SelectTrigger>
             <SelectContent position="popper">
               {ORDER_STATUS.map((status) => (
-                <SelectItem value={status.value}>{status.label}</SelectItem>
+                <SelectItem key={status.value} value={status.value}>
+                  {status.label}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
+        <button onClick={handleDelete} className="text-red-500">Delete Order</button>
       </CardContent>
     </Card>
   );

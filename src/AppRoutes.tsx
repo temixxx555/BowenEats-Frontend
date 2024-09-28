@@ -9,6 +9,9 @@ import SearchPage from "./pages/SearchPage";
 import DetailPage from "./pages/DetailPage";
 import OrderStatusPage from "./pages/OrderStatusPage";
 
+import ProtectedRoutes from "./auth/ProtectedRoutes";
+import PayOrder from "./pages/PayOrder";
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -47,6 +50,14 @@ const AppRoutes = () => {
           }
         />
         <Route
+          path='/pay-order'
+          element={
+            <Layout>
+              <PayOrder />
+            </Layout>
+          }
+        />
+        <Route
           path='/user-profile'
           element={
             <Layout>
@@ -54,7 +65,10 @@ const AppRoutes = () => {
             </Layout>
           }
         />
-        <Route
+     
+      </Route>
+      <Route element={<ProtectedRoutes />}>
+      <Route
           path='/manage-restaurant'
           element={
             <Layout>

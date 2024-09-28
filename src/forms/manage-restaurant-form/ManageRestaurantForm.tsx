@@ -15,36 +15,38 @@ import { useEffect } from "react";
 const formSchema = z
   .object({
     restaurantName: z.string({
-      required_error: "restuarant name is required",
+      required_error: "Restaurant name is required",
     }),
     city: z.string({
-      required_error: "city is required",
+      required_error: "location is required",
     }),
     country: z.string({
-      required_error: "country is required",
+      required_error: "Country is required",
     }),
     deliveryPrice: z.coerce.number({
-      required_error: "delivery price is required",
-      invalid_type_error: "must be a valid number",
+      required_error: "Delivery price is required",
+      invalid_type_error: "Must be a valid number",
     }),
     estimatedDeliveryTime: z.coerce.number({
-      required_error: "estimated delivery time is required",
-      invalid_type_error: "must be a valid number",
+      required_error: "Estimated delivery time is required",
+      invalid_type_error: "Must be a valid number",
     }),
     cuisines: z.array(z.string()).nonempty({
-      message: "please select at least one item",
+      message: "Please select at least one item",
     }),
     menuItems: z.array(
       z.object({
-        name: z.string().min(1, "name is required"),
-        price: z.coerce.number().min(1, "price is required"),
+        name: z.string().min(1, "Name is required"),
+        price: z.coerce.number().min(1, "Price is required"),
       })
     ),
     imageUrl: z.string().optional(),
-    imageFile: z.instanceof(File, { message: "image is required" }).optional(),
+    imageFile: z.instanceof(File, { message: "Image is required" }).optional(),
+    accountName: z.string().min(1, "Account name && bank is required"),  // Ensure it's not empty
+  accountNumber: z.string().min(1, "Account number is required"), // Ensure it's not empty
   })
   .refine((data) => data.imageUrl || data.imageFile, {
-    message: "Either image URL or image File must be provided",
+    message: "Either image URL or image file must be provided",
     path: ["imageFile"],
   });
 
@@ -62,6 +64,8 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
     defaultValues: {
       cuisines: [],
       menuItems: [{ name: "", price: 0 }],
+      accountName: "", // Default value
+      accountNumber: "", // Default value
     },
   });
 
@@ -70,60 +74,64 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
       return;
     }
 
-    // price lowest domination of 100 = 100pence == 1GBP
-    const deliveryPriceFormatted = parseInt(
-      (restaurant.deliveryPrice / 100).toFixed(2)
-    );
+    const deliveryPriceFormatted = restaurant.deliveryPrice; // Already in Naira
 
     const menuItemsFormatted = restaurant.menuItems.map((item) => ({
       ...item,
-      price: parseInt((item.price / 100).toFixed(2)),
+      price: item.price, // Already in Naira
     }));
 
     const updatedRestaurant = {
       ...restaurant,
       deliveryPrice: deliveryPriceFormatted,
       menuItems: menuItemsFormatted,
+      accountName: restaurant.accountName , // Handle accountName
+      accountNumber: restaurant.accountNumber , // Handle accountNumber
     };
 
     form.reset(updatedRestaurant);
   }, [form, restaurant]);
 
-  const onSubmit = (formDataJson: RestaurantFormData) => {
+ const onSubmit = async (formDataJson: RestaurantFormData) => {
+  try {
+    // Validate form data using Zod schema
+    const validatedData = await formSchema.parseAsync(formDataJson);
+
     const formData = new FormData();
+    formData.append("restaurantName", validatedData.restaurantName);
+    formData.append("city", validatedData.city);
+    formData.append("country", validatedData.country);
+    formData.append("deliveryPrice", validatedData.deliveryPrice.toString());
+    formData.append("estimatedDeliveryTime", validatedData.estimatedDeliveryTime.toString());
 
-    formData.append("restaurantName", formDataJson.restaurantName);
-    formData.append("city", formDataJson.city);
-    formData.append("country", formDataJson.country);
+    // Handle accountName and accountNumber
+    formData.append("accountName", validatedData.accountName); 
+    formData.append("accountNumber", validatedData.accountNumber);
 
-    // 1GB =100PENCE
-    // 1.50GB=150PENCE * LOWEST DENOMINATION
-    formData.append(
-      "deliveryPrice",
-      (formDataJson.deliveryPrice * 100).toString()
-    );
-    formData.append(
-      "estimatedDeliveryTime",
-      formDataJson.estimatedDeliveryTime.toString()
-    );
-    formDataJson.cuisines.forEach((cuisine, index) => {
+    validatedData.cuisines.forEach((cuisine, index) => {
       formData.append(`cuisines[${index}]`, cuisine);
     });
-    formDataJson.menuItems.forEach((menuItem, index) => {
+    validatedData.menuItems.forEach((menuItem, index) => {
       formData.append(`menuItems[${index}][name]`, menuItem.name);
-      formData.append(
-        `menuItems[${index}][price]`,
-        (menuItem.price * 100).toString()
-      );
+      formData.append(`menuItems[${index}][price]`, menuItem.price.toString());
     });
 
-    if (formDataJson.imageFile) {
-      formData.append(`imageFile`, formDataJson.imageFile);
+    if (validatedData.imageFile) {
+      formData.append(`imageFile`, validatedData.imageFile);
     }
 
+    // Call your save function
     onSave(formData);
-  };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      // Log or display validation errors
+      console.error(error.errors);
+      // Handle error display for UI (e.g., set error state)
+    }
+  }
+};
 
+  
   return (
     <Form {...form}>
       <form

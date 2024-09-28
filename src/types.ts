@@ -25,6 +25,8 @@ export type User = {
     menuItems: MenuItem[];
     imageUrl: string;
     lastUpdated: string;
+    accountName: string;     // New field
+    accountNumber: string;
   };
   
   export type OrderStatus =

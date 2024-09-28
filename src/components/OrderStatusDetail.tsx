@@ -6,10 +6,15 @@ type Props = {
 };
 
 const OrderStatusDetail = ({ order }: Props) => {
+  // Function to format the amount in Naira
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString("en-NG", { style: "currency", currency: "NGN" });
+  };
+
   return (
     <div className="space-y-5">
       <div className="flex flex-col">
-        <span className="font-bold">Delivering to:</span>
+        <span className="font-bold">Address:</span>
         <span>{order.deliveryDetails.name}</span>
         <span>
           {order.deliveryDetails.addressLine1}, {order.deliveryDetails.city}
@@ -19,7 +24,7 @@ const OrderStatusDetail = ({ order }: Props) => {
         <span className="font-bold">Your Order</span>
         <ul>
           {order.cartItems.map((item) => (
-            <li>
+            <li key={item.menuItemId}>
               {item.name} x {item.quantity}
             </li>
           ))}
@@ -28,7 +33,7 @@ const OrderStatusDetail = ({ order }: Props) => {
       <Separator />
       <div className="flex flex-col">
         <span className="font-bold">Total</span>
-        <span>£{(order.totalAmount / 100).toFixed(2)}</span>
+        <span>{formatCurrency(order.totalAmount)}</span>
       </div>
     </div>
   );

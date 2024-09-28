@@ -20,8 +20,9 @@ const HomePage = () => {
         </h1>
         <span className='text-xl'>Food is just a click away!</span>
         <SearchBar
-          placeHolder='Search by City or Town'
+          placeHolder='Search For bowen'
           onSubmit={handleSearchSubmit}
+          
         />
       </div>
       <div className='grid md:grid-cols-2 gap-5'>
@@ -31,8 +32,11 @@ const HomePage = () => {
             Order takeaway even faster!
           </span>
           <span>
-            Download the MernEats App for faster ordering and personalised
+            Download the BowenEats App for faster ordering and personalised
             recommendations
+          </span>
+          <span className="font-bold">
+            Coming soon!!
           </span>
           <img src={appDownloadImage} />
         </div>
