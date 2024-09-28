@@ -34,7 +34,9 @@ const DetailPage = () => {
 
   const addToCart = (menuItem: MenuItemType) => {
     setCartItems((prevCartItems) => {
-      const existingCartItem = prevCartItems.find((cartItem) => cartItem._id === menuItem._id);
+      const existingCartItem = prevCartItems.find(
+        (cartItem) => cartItem._id === menuItem._id
+      );
       const updatedCartItems = existingCartItem
         ? prevCartItems.map((cartItem) =>
             cartItem._id === menuItem._id
@@ -51,15 +53,23 @@ const DetailPage = () => {
             },
           ];
 
-      sessionStorage.setItem(`cartItems-${restaurantId}`, JSON.stringify(updatedCartItems));
+      sessionStorage.setItem(
+        `cartItems-${restaurantId}`,
+        JSON.stringify(updatedCartItems)
+      );
       return updatedCartItems;
     });
   };
 
   const removeFromCart = (cartItem: CartItem) => {
     setCartItems((prevCartItems) => {
-      const updatedCartItems = prevCartItems.filter((item) => cartItem._id !== item._id);
-      sessionStorage.setItem(`cartItems-${restaurantId}`, JSON.stringify(updatedCartItems));
+      const updatedCartItems = prevCartItems.filter(
+        (item) => cartItem._id !== item._id
+      );
+      sessionStorage.setItem(
+        `cartItems-${restaurantId}`,
+        JSON.stringify(updatedCartItems)
+      );
       return updatedCartItems;
     });
   };
@@ -71,8 +81,6 @@ const DetailPage = () => {
     }, 0);
 
     return itemsTotal + (includeDelivery ? deliveryPrice : 0);
-    
-    
   };
 
   const onCheckout = async (userFormData: UserFormData) => {
@@ -80,9 +88,12 @@ const DetailPage = () => {
       toast.error("Restaurant information is missing.");
       return;
     }
-  
-    const totalAmount = calculateTotalAmount(cartItems, restaurant.deliveryPrice || 0);
-  
+
+    const totalAmount = calculateTotalAmount(
+      cartItems,
+      restaurant.deliveryPrice || 0
+    );
+
     // Create order data
     const orderData = {
       cartItems: cartItems.map((cartItem) => ({
@@ -104,7 +115,7 @@ const DetailPage = () => {
       accountNumber: restaurant.accountNumber || "",
       ...(includeDelivery && { deliveryPrice: restaurant.deliveryPrice || 0 }), // Only include deliveryPrice if includeDelivery is true
     };
-  
+
     try {
       const newOrder = await createOrder(orderData);
       console.log("Order created:", newOrder);
@@ -114,26 +125,24 @@ const DetailPage = () => {
       toast.error("Failed to create order. Please try again.");
     }
   };
-  
-  
 
   if (isLoading || !restaurant) {
     return <div>Loading...</div>; // Better loading state
   }
 
   return (
-    <div className='flex flex-col gap-10'>
+    <div className="flex flex-col gap-10 p-4 sm:p-6 md:p-8">
       <AspectRatio ratio={16 / 5}>
         <img
           src={restaurant.imageUrl}
-          className='rounded-md object-cover h-full w-full'
+          className="rounded-md object-cover h-full w-full"
           alt={restaurant.restaurantName}
         />
       </AspectRatio>
-      <div className='grid md:grid-cols-[4fr_2fr] gap-5 md:px-32'>
-        <div className='flex flex-col gap-4'>
+      <div className="grid grid-cols-1 md:grid-cols-[4fr_2fr] gap-5">
+        <div className="flex flex-col gap-4">
           <RestaurantInfo restaurant={restaurant} />
-          <span className='text-2xl font-bold tracking-tight'>Menu</span>
+          <span className="text-2xl font-bold tracking-tight">Menu</span>
           {restaurant.menuItems.map((menuItem) => (
             <MenuItem
               key={menuItem._id}
@@ -143,8 +152,8 @@ const DetailPage = () => {
           ))}
         </div>
 
-        <div>
-          <Card>
+        <div className="w-full max-w-md mx-auto p-4 sm:p-6 md:p-8">
+          <Card className="w-full">
             <OrderSummary
               restaurant={restaurant}
               cartItems={cartItems}
@@ -152,7 +161,7 @@ const DetailPage = () => {
               includeDelivery={includeDelivery}
               setIncludeDelivery={setIncludeDelivery}
             />
-            <CardFooter>
+            <CardFooter className="flex justify-end">
               <CheckoutButton
                 disabled={cartItems.length === 0}
                 onCheckout={onCheckout}
@@ -167,3 +176,4 @@ const DetailPage = () => {
 };
 
 export default DetailPage;
+
