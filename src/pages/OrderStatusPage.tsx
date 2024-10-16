@@ -37,7 +37,7 @@ return updatedDeletedIds;
 };
 
   // Function to print individual order card
-  const printOrder = (orderId: string) => {
+  const printOrder = (orderId: string) => { 
     const orderRef = printRefs.current[orderId];
     if (orderRef) {
       const printContents = orderRef.innerHTML;
@@ -56,16 +56,17 @@ return updatedDeletedIds;
       document.body.innerHTML = printContents;
   
       try {
-        window.print();
+        window.print(); // Attempt to print
       } catch {
         alert("Unable to automatically print. Please try printing manually.");
       } finally {
         // Restore the original content after printing
         document.body.innerHTML = originalContents;
-        window.location.href = "/"; // Redirect to home page
+        window.location.reload(); // Reload the page after printing
       }
     }
   };
+  
   
   
 
