@@ -1,50 +1,29 @@
-# React + TypeScript + Vite
+# **BowenEats Frontend**  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+BowenEats is a food delivery web application designed to solve the challenge of time wasted in queues for food tickets at Bowen University. This solution provides a seamless user experience for browsing menus, placing orders, and making secure payments.  
 
-Currently, two official plugins are available:
+## **Features**  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Restaurant and Menu Browsing**: Explore nearby restaurants and their menus.  
+- **User Authentication**: Login and register securely using Firebase Authentication.  
+- **Cart Management**: Add items to the cart, adjust quantities, and view subtotals.  
+- **Order History**: View past orders and receipts.  
+- **Real-Time Order Updates**: Users can view the status of their orders.  
+- **Secure Payment Integration**: Make payments using Paystack.  
+- **Responsive Design**: Optimized for desktop and mobile devices.  
 
-## Expanding the ESLint configuration
+## **Tech Stack**  
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **Frontend Framework**: React.js  
+- **State Management**: Context API and Reducer Pattern  
+- **Styling**: Tailwind CSS and ShadCN for responsive and modern designs  
+- **Authentication**: Firebase Authentication  
+- **Payment Gateway**: Paystack for secure payment processing  
+- **Hosting**: Vercel for fast and scalable deployment  
 
-- Configure the top-level `parserOptions` property like this:
+## **Setup Instructions**  
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+### **1. Clone the Repository**  
+```bash  
+git clone https://github.com/your-username/boweneats-frontend.git  
+cd boweneats-frontend  
